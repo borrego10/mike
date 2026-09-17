@@ -91,10 +91,6 @@ public class FutbolService {
         return respuesta;
     }
 
-    public List<Entrenamiento> listarEntrenamientos() {
-        return entrenamientos;
-    }
-
     public void reiniciar() {
         entrenamientos.clear();
     }
