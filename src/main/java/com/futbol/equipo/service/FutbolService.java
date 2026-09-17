@@ -5,25 +5,18 @@ import com.futbol.equipo.model.Jugador;
 import com.futbol.equipo.model.TitularDTO;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class FutbolService {
 
-    // Lista en memoria para almacenar los entrenamientos de la semana
+    // lista para guardar los entrenamientos
     private final List<Entrenamiento> entrenamientos = new ArrayList<>();
-    
-    // Puede escalar a fútbol 11 cambiando este valor
+
     private static final int CANTIDAD_TITULARES = 5;
     private static final int ENTRENAMIENTOS_REQUERIDOS = 3;
 
-    /**
-     * Almacena la información de cada entrenamiento y calcula el puntaje de cada jugador.
-     */
+    // guarda el entrenamiento y calcula el puntaje de cada jugador
     public Entrenamiento guardarEntrenamiento(Entrenamiento entrenamiento) {
         if (entrenamiento.getJugadores() != null) {
             for (Jugador jugador : entrenamiento.getJugadores()) {
@@ -34,14 +27,11 @@ public class FutbolService {
         return entrenamiento;
     }
 
-    /**
-     * Determina el equipo titular con los 5 mejores jugadores.
-     * Solo retorna titulares si se completaron los 3 entrenamientos de la semana.
-     */
+    // metodo principal que saca los 5 titulares
     public Map<String, Object> obtenerTitulares() {
         Map<String, Object> respuesta = new LinkedHashMap<>();
 
-        // Regla: Validar si se completaron los 3 entrenamientos
+        // validar que se hayan hecho los 3 entrenamientos
         if (entrenamientos.size() < ENTRENAMIENTOS_REQUERIDOS) {
             respuesta.put("mensaje", "No hay suficiente información. Se requieren 3 entrenamientos de la semana.");
             respuesta.put("entrenamientosRegistrados", entrenamientos.size());
@@ -49,7 +39,7 @@ public class FutbolService {
             return respuesta;
         }
 
-        // Agrupar los puntajes de cada jugador a lo largo de los entrenamientos
+        // agrupar los puntajes de cada jugador en todos los entrenamientos
         Map<String, List<Double>> puntajesPorJugador = new HashMap<>();
         for (Entrenamiento entrenamiento : entrenamientos) {
             for (Jugador jugador : entrenamiento.getJugadores()) {
@@ -59,7 +49,7 @@ public class FutbolService {
             }
         }
 
-        // Calcular el promedio de cada jugador
+        // calcular el promedio de cada jugador
         List<TitularDTO> listaPromedios = new ArrayList<>();
         for (Map.Entry<String, List<Double>> entry : puntajesPorJugador.entrySet()) {
             String nombre = entry.getKey();
@@ -73,10 +63,10 @@ public class FutbolService {
             listaPromedios.add(new TitularDTO(0, nombre, promedio));
         }
 
-        // Ordenar de mayor a menor según el promedio
+        // ordenar de mayor a menor
         listaPromedios.sort((a, b) -> Double.compare(b.getPromedioPuntaje(), a.getPromedioPuntaje()));
 
-        // Tomar los 5 primeros para el equipo titular
+        // tomar los 5 mejores
         List<TitularDTO> titularesFinales = new ArrayList<>();
         int limite = Math.min(CANTIDAD_TITULARES, listaPromedios.size());
         for (int i = 0; i < limite; i++) {

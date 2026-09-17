@@ -15,7 +15,7 @@ public class Entrenamiento {
     public Entrenamiento(int numeroEntrenamiento, String fecha, List<Jugador> jugadores) {
         this.numeroEntrenamiento = numeroEntrenamiento;
         this.fecha = fecha;
-        this.jugadores = jugadores != null ? jugadores : new ArrayList<>();
+        this.jugadores = jugadores;
     }
 
     public int getNumeroEntrenamiento() {

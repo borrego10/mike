@@ -19,12 +19,7 @@ public class Jugador {
         this.calcularPuntaje();
     }
 
-    /**
-     * Calcula la nota del jugador según las ponderaciones del taller:
-     * Potencia de tiro: 20%
-     * Velocidad: 30%
-     * Pases efectivos: 50%
-     */
+    // metodo para calcular el puntaje con las ponderaciones
     public void calcularPuntaje() {
         double calculo = (this.potenciaTiro * 0.20) + (this.velocidad * 0.30) + (this.pasesEfectivos * 0.50);
         this.puntaje = Math.round(calculo * 100.0) / 100.0;
