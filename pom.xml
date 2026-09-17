@@ -15,7 +15,7 @@
     <artifactId>futbol5-api</artifactId>
     <version>1.0.0</version>
     <name>futbol5-api</name>
-    <description>API REST para selección del equipo titular de Fútbol 5 según métricas de entrenamiento</description>
+    <description>API REST para seleccion del equipo titular de Futbol 5 segun metricas de entrenamiento</description>
 
     <properties>
         <java.version>17</java.version>

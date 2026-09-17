@@ -1,72 +1,44 @@
-# Taller Fútbol 5 - Selección de Titulares
+# Solucion del taller Futbol 5
 
-Proyecto en Spring Boot (Java) para registrar los entrenamientos semanales de un equipo de fútbol 5 y calcular los 5 jugadores titulares de acuerdo a su rendimiento.
+Esta solucion se hizo con Spring Boot y Java.
 
-## Reglas del Algoritmo
-- **Cálculo de puntaje por entrenamiento:**
-  `Puntaje = (Potencia * 0.20) + (Velocidad * 0.30) + (Pases * 0.50)`
-- **Condición de los 3 entrenamientos:**
-  Solo se puede calcular el equipo titular si se han completado los 3 entrenamientos semanales. Si hay menos, la API devuelve un mensaje informando que no hay suficiente información.
-- **Titulares:**
-  Se seleccionan los 5 jugadores con mejor promedio en la semana ordenados de mayor a menor puntaje.
+La idea principal es registrar 3 entrenamientos de la semana y despues escoger los 5 mejores jugadores.
 
-## Cómo ejecutar el proyecto
+## Regla del puntaje
 
-### 1. Iniciar el servidor
-```powershell
-.\mvnw.cmd spring-boot:run
+Cada jugador tiene 3 datos:
+
+- Potencia de tiro
+- Velocidad
+- Pases efectivos
+
+La nota se calcula asi:
+
+```txt
+puntaje = (potenciaTiro * 0.20) + (velocidad * 0.30) + (pasesEfectivos * 0.50)
 ```
-La aplicación inicia en `http://localhost:8080`.
 
-### 2. Correr las pruebas unitarias
-```powershell
-.\mvnw.cmd test
-```
+## Regla de los 3 entrenamientos
+
+Si todavia no hay 3 entrenamientos, el sistema no selecciona titulares.
+
+Cuando ya existen 3 entrenamientos, el sistema calcula el promedio de cada jugador y escoge los 5 mejores.
+
+## Archivos importantes
+
+- `FutbolController.java`: recibe las peticiones.
+- `FutbolService.java`: tiene la logica principal.
+- `Jugador.java`: guarda los datos del jugador y calcula el puntaje.
+- `Entrenamiento.java`: guarda el numero, fecha y jugadores del entrenamiento.
+- `TitularDTO.java`: es la respuesta que se muestra al consultar titulares.
 
 ## Endpoints
 
-### 1. Registrar entrenamiento
-- **POST** `/api/entrenamientos`
-- **Body:**
-```json
-{
-  "numeroEntrenamiento": 1,
-  "fecha": "2026-09-17",
-  "jugadores": [
-    { "nombreJugador": "Jugador1", "potenciaTiro": 10.0, "velocidad": 5.0, "pasesEfectivos": 25 },
-    { "nombreJugador": "Jugador2", "potenciaTiro": 16.0, "velocidad": 5.0, "pasesEfectivos": 20 },
-    { "nombreJugador": "Jugador3", "potenciaTiro": 15.0, "velocidad": 3.0, "pasesEfectivos": 30 },
-    { "nombreJugador": "Jugador4", "potenciaTiro": 12.0, "velocidad": 4.0, "pasesEfectivos": 18 },
-    { "nombreJugador": "Jugador5", "potenciaTiro": 11.0, "velocidad": 3.0, "pasesEfectivos": 19 },
-    { "nombreJugador": "Jugador6", "potenciaTiro": 9.0,  "velocidad": 3.0, "pasesEfectivos": 22 },
-    { "nombreJugador": "Jugador7", "potenciaTiro": 10.0, "velocidad": 2.0, "pasesEfectivos": 24 }
-  ]
-}
+```txt
+POST /api/entrenamientos
+GET /api/titulares
 ```
 
-### 2. Obtener titulares
-- **GET** `/api/titulares`
+## Explicacion corta
 
-**Si faltan entrenamientos (menos de 3):**
-```json
-{
-  "mensaje": "No hay suficiente información. Se requieren 3 entrenamientos de la semana.",
-  "entrenamientosRegistrados": 1,
-  "titulares": []
-}
-```
-
-**Si se completaron los 3 entrenamientos:**
-```json
-{
-  "mensaje": "Equipo titular determinado exitosamente.",
-  "totalEntrenamientos": 3,
-  "titulares": [
-    { "posicion": 1, "nombreJugador": "Jugador3", "promedioPuntaje": 18.9 },
-    { "posicion": 2, "nombreJugador": "Jugador1", "promedioPuntaje": 16.0 },
-    { "posicion": 3, "nombreJugador": "Jugador2", "promedioPuntaje": 14.7 },
-    { "posicion": 4, "nombreJugador": "Jugador7", "promedioPuntaje": 14.6 },
-    { "posicion": 5, "nombreJugador": "Jugador6", "promedioPuntaje": 13.7 }
-  ]
-}
-```
+El usuario registra entrenamientos. Cada entrenamiento trae una lista de jugadores. A cada jugador se le calcula una nota. Cuando se consulta el equipo titular, el programa revisa que existan 3 entrenamientos, calcula el promedio de cada jugador y muestra los 5 mejores.

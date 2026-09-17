@@ -5,79 +5,90 @@ import com.futbol.equipo.model.Jugador;
 import com.futbol.equipo.model.TitularDTO;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class FutbolService {
 
-    // lista para guardar los entrenamientos
+    // Los entrenamientos quedan en memoria mientras la aplicacion esta encendida.
     private final List<Entrenamiento> entrenamientos = new ArrayList<>();
 
     private static final int CANTIDAD_TITULARES = 5;
     private static final int ENTRENAMIENTOS_REQUERIDOS = 3;
 
-    // guarda el entrenamiento y calcula el puntaje de cada jugador
+    // Guarda el entrenamiento y calcula el puntaje de cada jugador.
     public Entrenamiento guardarEntrenamiento(Entrenamiento entrenamiento) {
         if (entrenamiento.getJugadores() != null) {
             for (Jugador jugador : entrenamiento.getJugadores()) {
                 jugador.calcularPuntaje();
             }
         }
+
         entrenamientos.add(entrenamiento);
         return entrenamiento;
     }
 
-    // metodo principal que saca los 5 titulares
+    // Calcula los 5 titulares cuando ya existen 3 entrenamientos.
     public Map<String, Object> obtenerTitulares() {
         Map<String, Object> respuesta = new LinkedHashMap<>();
 
-        // validar que se hayan hecho los 3 entrenamientos
         if (entrenamientos.size() < ENTRENAMIENTOS_REQUERIDOS) {
-            respuesta.put("mensaje", "No hay suficiente información. Se requieren 3 entrenamientos de la semana.");
+            respuesta.put("mensaje", "No hay suficiente informacion. Se requieren 3 entrenamientos de la semana.");
             respuesta.put("entrenamientosRegistrados", entrenamientos.size());
             respuesta.put("titulares", List.of());
             return respuesta;
         }
 
-        // agrupar los puntajes de cada jugador en todos los entrenamientos
         Map<String, List<Double>> puntajesPorJugador = new HashMap<>();
+
         for (Entrenamiento entrenamiento : entrenamientos) {
             for (Jugador jugador : entrenamiento.getJugadores()) {
-                puntajesPorJugador
-                        .computeIfAbsent(jugador.getNombreJugador(), k -> new ArrayList<>())
-                        .add(jugador.getPuntaje());
+                String nombre = jugador.getNombreJugador();
+                double puntaje = jugador.getPuntaje();
+
+                if (!puntajesPorJugador.containsKey(nombre)) {
+                    puntajesPorJugador.put(nombre, new ArrayList<>());
+                }
+
+                puntajesPorJugador.get(nombre).add(puntaje);
             }
         }
 
-        // calcular el promedio de cada jugador
-        List<TitularDTO> listaPromedios = new ArrayList<>();
+        List<TitularDTO> promedios = new ArrayList<>();
+
         for (Map.Entry<String, List<Double>> entry : puntajesPorJugador.entrySet()) {
             String nombre = entry.getKey();
-            List<Double> notas = entry.getValue();
-
+            List<Double> puntajes = entry.getValue();
             double suma = 0.0;
-            for (double nota : notas) {
-                suma += nota;
+
+            for (double puntaje : puntajes) {
+                suma += puntaje;
             }
-            double promedio = Math.round((suma / notas.size()) * 100.0) / 100.0;
-            listaPromedios.add(new TitularDTO(0, nombre, promedio));
+
+            double promedio = suma / puntajes.size();
+            promedio = Math.round(promedio * 100.0) / 100.0;
+
+            promedios.add(new TitularDTO(0, nombre, promedio));
         }
 
-        // ordenar de mayor a menor
-        listaPromedios.sort((a, b) -> Double.compare(b.getPromedioPuntaje(), a.getPromedioPuntaje()));
+        promedios.sort((a, b) -> Double.compare(b.getPromedioPuntaje(), a.getPromedioPuntaje()));
 
-        // tomar los 5 mejores
-        List<TitularDTO> titularesFinales = new ArrayList<>();
-        int limite = Math.min(CANTIDAD_TITULARES, listaPromedios.size());
+        List<TitularDTO> titulares = new ArrayList<>();
+        int limite = Math.min(CANTIDAD_TITULARES, promedios.size());
+
         for (int i = 0; i < limite; i++) {
-            TitularDTO titular = listaPromedios.get(i);
+            TitularDTO titular = promedios.get(i);
             titular.setPosicion(i + 1);
-            titularesFinales.add(titular);
+            titulares.add(titular);
         }
 
         respuesta.put("mensaje", "Equipo titular determinado exitosamente.");
         respuesta.put("totalEntrenamientos", entrenamientos.size());
-        respuesta.put("titulares", titularesFinales);
+        respuesta.put("titulares", titulares);
         return respuesta;
     }
 

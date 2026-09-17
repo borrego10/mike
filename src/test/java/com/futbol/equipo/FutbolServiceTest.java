@@ -24,9 +24,9 @@ class FutbolServiceTest {
     }
 
     @Test
-    @DisplayName("Debe calcular correctamente el puntaje del jugador según la fórmula (20%, 30%, 50%)")
+    @DisplayName("Debe calcular correctamente el puntaje del jugador segun la formula (20%, 30%, 50%)")
     void testCalculoPuntajeJugador() {
-        // Datos oficiales de la prueba técnica para el entrenamiento #1:
+        // Datos oficiales de la prueba tecnica para el entrenamiento #1:
         // Jugador1: Potencia 10, Velocidad 5, Pases 25 -> Resultado esperado: 16.0
         Jugador jugador1 = new Jugador("Jugador1", 10.0, 5.0, 25);
         assertEquals(16.0, jugador1.getPuntaje(), 0.01);
@@ -37,7 +37,7 @@ class FutbolServiceTest {
     }
 
     @Test
-    @DisplayName("Debe retornar mensaje de información insuficiente si hay menos de 3 entrenamientos")
+    @DisplayName("Debe retornar mensaje de informacion insuficiente si hay menos de 3 entrenamientos")
     void testMenosDeTresEntrenamientos() {
         // Solo registramos 2 entrenamientos
         futbolService.guardarEntrenamiento(new Entrenamiento(1, "2026-09-17", List.of(new Jugador("Jugador1", 10, 5, 25))));
@@ -45,7 +45,7 @@ class FutbolServiceTest {
 
         Map<String, Object> resultado = futbolService.obtenerTitulares();
 
-        assertTrue(resultado.get("mensaje").toString().contains("No hay suficiente información"));
+        assertTrue(resultado.get("mensaje").toString().contains("No hay suficiente informacion"));
         List<?> titulares = (List<?>) resultado.get("titulares");
         assertTrue(titulares.isEmpty());
     }
