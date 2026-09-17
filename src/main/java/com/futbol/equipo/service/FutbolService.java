@@ -91,8 +91,4 @@ public class FutbolService {
         respuesta.put("titulares", titulares);
         return respuesta;
     }
-
-    public void reiniciar() {
-        entrenamientos.clear();
-    }
 }
